@@ -38,7 +38,7 @@
 ;; for allowing `undo' commands. Cycle through the list of undo's as normal.
 ;; When you are finished, type `C-c C-c' to add the chain of undo's as a
 ;; single edit to the undo history. To cancel, type `C-c C-k'. You can also
-;; diff the proposed chain of undo's by typing `C-c C-d'.
+;; ediff the proposed chain of undo's by typing `C-c C-d'.
 
 ;;; Code:
 
@@ -80,8 +80,7 @@
 
 (defun undo-propose-diff ()
   (interactive)
-  ;; TODO ediff?
-  (diff undo-propose-parent (current-buffer)))
+  (ediff-buffers undo-propose-parent (current-buffer)))
 
 (defun undo-propose-cancel ()
   (interactive)
