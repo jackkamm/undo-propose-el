@@ -14,6 +14,12 @@ When you are finished, type "C-c C-c" to add the chain of undo's as a
 single edit to the undo history.  To cancel, type "C-c C-k".  You can also
 ediff the proposed chain of undo's by typing "C-c C-d".
 
+** Screenshot
+
+In the following gif, I enter some text, call ~undo-propose~, do a sequence of undo's and redo's within the ~undo-propose~ buffer, compare against the original buffer with ~ediff~, commit the sequence of undo's, and finally undo (redo) the change made by ~undo-propose~.
+
+[[./assets/undo-ediff-commit-undo-redo.gif]]
+
 ** Other notes
 
 See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree.el]] for a more powerful undo navigation system. Unfortunately,
