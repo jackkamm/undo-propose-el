@@ -102,9 +102,13 @@ command within undo-propose buffers."
 This change is added as a single edit in the undo history."
   (interactive)
   (let ((tmp-buffer (current-buffer))
-        (orig-buffer undo-propose-parent))
+        (orig-buffer undo-propose-parent)
+        (pos (point))
+        (win-start (window-start)))
     (copy-to-buffer orig-buffer 1 (buffer-end 1))
     (kill-buffer tmp-buffer)
+    (goto-char pos)
+    (set-window-start (selected-window) win-start)
     (message "Commit Undo-Propose!")))
 
 (defun undo-propose-cancel ()
