@@ -29,4 +29,4 @@ It has a large and complex code-base, making it difficult to understand or modif
 
 undo-propose avoids writing a new undo system, only lightly wrapping
 emacs' default undo. I hope this design will avoid the corruption issues
-that plague previous [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html][attempts]], while still improving the useability of emacs' undo.
+that can affect more ambitious [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html][attempts]], while still improving the useability of emacs' undo.
