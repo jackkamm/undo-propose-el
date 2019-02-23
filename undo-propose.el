@@ -48,13 +48,16 @@
   (let ((mode major-mode)
         (orig-buffer (current-buffer))
         (list-copy (undo-copy-list buffer-undo-list))
+        (pos (point))
+        (win-start (window-start))
         (tmp-buffer (generate-new-buffer
                      (concat "*Undo Propose: "
                              (buffer-name) "*"))))
     (switch-to-buffer tmp-buffer)
     (funcall mode)
     (insert-buffer orig-buffer)
-    ;; TODO set cursor position
+    (goto-char pos)
+    (set-window-start (selected-window) win-start)
     (setq-local buffer-undo-list list-copy)
     (setq-local buffer-read-only t)
     (setq-local undo-propose-parent orig-buffer)
