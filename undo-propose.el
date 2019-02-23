@@ -26,24 +26,32 @@
 
 ;;; Commentary:
 
-;; This package aims to make emacs' confusing undo system easier to navigate.
+;; This package aims to make Emacs' confusing undo system easier to navigate.
 ;; It works by allowing you to navigate through the undo history in a temporary
-;; buffer. If at any point you get lost, you can easily cancel the proposed
-;; chain of undo's. When you are finished, the sequence of undo commands is added
+;; buffer.  If at any point you get lost, you can easily cancel the proposed
+;; chain of undo's.  When you are finished, the sequence of undo commands is added
 ;; as a single edit in the undo history, making it easier to traverse through
 ;; the chain of undo's and redo's later on.
 
-;; To use undo-propose, call `M-x undo-propose' in the buffer you are editing.
+;; To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
 ;; This will send you to a new temporary buffer, which is read-only except
-;; for allowing `undo' commands. Cycle through the list of undo's as normal.
-;; When you are finished, type `C-c C-c' to add the chain of undo's as a
-;; single edit to the undo history. To cancel, type `C-c C-k'. You can also
-;; ediff the proposed chain of undo's by typing `C-c C-d'.
+;; for allowing `undo' commands.  Cycle through the list of undo's as normal.
+;; When you are finished, type "C-c C-c" to add the chain of undo's as a
+;; single edit to the undo history.  To cancel, type "C-c C-k".  You can also
+;; ediff the proposed chain of undo's by typing "C-c C-d".
 
 ;;; Code:
 
+(defvar undo-propose-parent nil "Parent buffer of undo-propose buffer.")
+
 ;;;###autoload
 (defun undo-propose ()
+  "Navigate undo history in a new temporary buffer.
+Copies 'current-buffer' and 'buffer-undo-list' to a new temporary buffer,
+which is read-only except for undo commands.  After finished undoing, type
+\\<undo-propose-map> \\[undo-propose-finish] to add the chain of undos as a
+single edit to the original buffer and its 'buffer-undo-list'.  To cancel,
+type \\[undo-propose-cancel], and to view an ediff type \\[undo-propose-diff]."
   (interactive)
   (let ((mode major-mode)
         (orig-buffer (current-buffer))
@@ -55,7 +63,7 @@
                              (buffer-name) "*"))))
     (switch-to-buffer tmp-buffer)
     (funcall mode)
-    (insert-buffer orig-buffer)
+    (insert-buffer-substring orig-buffer)
     (goto-char pos)
     (set-window-start (selected-window) win-start)
     (setq-local buffer-undo-list list-copy)
@@ -65,7 +73,7 @@
     (message "Undo-Propose: C-c C-c to commit, C-c C-k to cancel, C-c C-d to diff")))
 
 (define-minor-mode undo-propose-mode
-  "TODO documentation"
+  "Minor mode for `undo-propose'."
   nil " UndoP" (make-sparse-keymap))
 (define-key undo-propose-mode-map [remap undo] 'undo-propose-undo)
 (define-key undo-propose-mode-map [remap undo-only] 'undo-propose-undo-only)
@@ -74,16 +82,24 @@
 (define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
 
 (defun undo-propose-undo ()
+  "Undo within an undo-propose buffer.
+You should not directly call this; instead,`undo' is remapped to this
+command within undo-propose buffers."
   (interactive)
     (let ((buffer-read-only nil))
       (undo)))
 
 (defun undo-propose-undo-only ()
+  "Undo-only within an undo-propose buffer.
+You should not directly call this; instead,`undo-only' is remapped to this
+command within undo-propose buffers."
   (interactive)
     (let ((buffer-read-only nil))
       (undo-only)))
 
 (defun undo-propose-finish ()
+  "Copy undo-propose buffer back to the parent buffer, then kill it.
+This change is added as a single edit in the undo history."
   (interactive)
   (let ((tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent))
@@ -92,6 +108,7 @@
     (message "Commit Undo-Propose!")))
 
 (defun undo-propose-cancel ()
+  "Kill undo-propose buffer without copying back to its parent."
   (interactive)
   (let ((tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent))
@@ -100,6 +117,7 @@
     (message "Cancel Undo-Propose!")))
 
 (defun undo-propose-diff ()
+  "View differences between undo-propose buffer and its parent using `ediff'."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
 
