@@ -42,15 +42,6 @@
 
 ;;; Code:
 
-(define-minor-mode undo-propose-mode
-  "TODO documentation"
-  nil " UndoP" (make-sparse-keymap))
-(define-key undo-propose-mode-map [remap undo] 'undo-propose-undo)
-(define-key undo-propose-mode-map [remap undo-only] 'undo-propose-undo-only)
-(define-key undo-propose-mode-map (kbd "C-c C-c") 'undo-propose-finish)
-(define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
-(define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
-
 ;;;###autoload
 (defun undo-propose ()
   (interactive)
@@ -70,25 +61,14 @@
     (undo-propose-mode 1)
     (message "Undo-Propose: C-c C-c to commit, C-c C-k to cancel, C-c C-d to diff")))
 
-(defun undo-propose-finish ()
-  (interactive)
-  (let ((tmp-buffer (current-buffer))
-        (orig-buffer undo-propose-parent))
-    (copy-to-buffer orig-buffer 1 (buffer-end 1))
-    (kill-buffer tmp-buffer)
-    (message "Commit Undo-Propose!")))
-
-(defun undo-propose-diff ()
-  (interactive)
-  (ediff-buffers undo-propose-parent (current-buffer)))
-
-(defun undo-propose-cancel ()
-  (interactive)
-  (let ((tmp-buffer (current-buffer))
-        (orig-buffer undo-propose-parent))
-    (kill-buffer tmp-buffer)
-    (switch-to-buffer orig-buffer)
-    (message "Cancel Undo-Propose!")))
+(define-minor-mode undo-propose-mode
+  "TODO documentation"
+  nil " UndoP" (make-sparse-keymap))
+(define-key undo-propose-mode-map [remap undo] 'undo-propose-undo)
+(define-key undo-propose-mode-map [remap undo-only] 'undo-propose-undo-only)
+(define-key undo-propose-mode-map (kbd "C-c C-c") 'undo-propose-finish)
+(define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
+(define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
 
 (defun undo-propose-undo ()
   (interactive)
@@ -100,6 +80,25 @@
     (let ((buffer-read-only nil))
       (undo-only)))
 
+(defun undo-propose-finish ()
+  (interactive)
+  (let ((tmp-buffer (current-buffer))
+        (orig-buffer undo-propose-parent))
+    (copy-to-buffer orig-buffer 1 (buffer-end 1))
+    (kill-buffer tmp-buffer)
+    (message "Commit Undo-Propose!")))
+
+(defun undo-propose-cancel ()
+  (interactive)
+  (let ((tmp-buffer (current-buffer))
+        (orig-buffer undo-propose-parent))
+    (kill-buffer tmp-buffer)
+    (switch-to-buffer orig-buffer)
+    (message "Cancel Undo-Propose!")))
+
+(defun undo-propose-diff ()
+  (interactive)
+  (ediff-buffers undo-propose-parent (current-buffer)))
 
 (provide 'undo-propose)
 
