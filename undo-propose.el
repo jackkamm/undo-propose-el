@@ -84,7 +84,7 @@ to view an ediff type \\[undo-propose-diff]."
 You should not directly call this; instead,`undo' is remapped to this
 command within ‘undo-propose’ buffers."
   (interactive)
-    (let ((buffer-read-only nil))
+    (let ((inhibit-read-only t))
       (undo)))
 
 (defun undo-propose-undo-only ()
@@ -92,7 +92,7 @@ command within ‘undo-propose’ buffers."
 You should not directly call this; instead,`undo-only' is remapped to this
 command within ‘undo-propose’ buffers."
   (interactive)
-    (let ((buffer-read-only nil))
+    (let ((inhibit-read-only t))
       (undo-only)))
 
 (defun undo-propose-finish ()
