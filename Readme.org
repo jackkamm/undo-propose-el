@@ -7,7 +7,7 @@ Emacs treats previous undo's as ordinary changes that can themselves be undone,
 making it possible to revisit any point in your edit history.
 However, it's easy to get turned around when moving through a chain of undo's, undo's of undo's,
 and so forth, as the same edit will be traversed multiple times backwards and forwards.
-On top of that, trying to find an old edit may add many undo's to the edit history,
+On top of that, trying to find an old edit can add many undo's to the edit history,
 making the undo ring longer and more difficult to navigate later on.
 
 ~undo-propose~ addresses this by letting you undo inside a temporary buffer.
