@@ -12,10 +12,8 @@ making the undo ring longer and more difficult to navigate later on.
 
 undo-propose addresses this by letting you undo inside a temporary buffer.
 This has 2 benefits:
-1. If you get lost, you can cancel the whole series of undo's, without modifying
-the original buffer or undo history.
-2. The series of undo's gets added as a single edit event, which makes
-the undo history simpler; you don't have to individually redo each undo later on.
+1. If you get lost, you can cancel the whole series of undo's, without modifying the original buffer or undo history.
+2. The series of undo's gets added as a single edit event, which makes the undo history simpler; you don't have to individually redo each undo later on.
 
 To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
