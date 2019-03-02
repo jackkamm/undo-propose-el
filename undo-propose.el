@@ -26,12 +26,9 @@
 
 ;;; Commentary:
 
-;; This package aims to make Emacs' confusing undo system easier to navigate.
-;; It works by allowing you to navigate through the undo history in a temporary
-;; buffer.  If at any point you get lost, you can easily cancel the proposed
-;; chain of undo's.  When you are finished, the sequence of undo commands is added
-;; as a single edit in the undo history, making it easier to traverse through
-;; the chain of undo's and redo's later on.
+
+;; undo-propose.el is a package for navigating through your undo history
+;; in a temporary buffer.
 
 ;; To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
 ;; This will send you to a new temporary buffer, which is read-only except

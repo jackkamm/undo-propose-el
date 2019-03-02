@@ -1,11 +1,21 @@
 * undo-propose
 
-This package aims to make Emacs' confusing undo system easier to navigate.
-It works by allowing you to navigate through the undo history in a temporary
-buffer.  If at any point you get lost, you can easily cancel the proposed
-chain of undo's.  When you are finished, the sequence of undo commands is added
-as a single edit in the undo history, making it easier to traverse through
-the chain of undo's and redo's later on.
+~undo-propose.el~ is a package for navigating through your undo history
+in a temporary buffer.
+
+Emacs treats previous undo's as ordinary changes that can themselves be undone,
+making it possible to revisit any point in your edit history.
+However, it's easy to get turned around when moving through a chain of undo's, undo's of undo's,
+and so forth, as the same edit will be traversed multiple times backwards and forwards.
+On top of that, trying to find an old edit may add many undo's to the edit history,
+making the undo ring longer and more difficult to navigate later on.
+
+undo-propose addresses this by letting you undo inside a temporary buffer.
+This has 2 benefits:
+1. If you get lost, you can cancel the whole series of undo's, without modifying
+the original buffer or undo history.
+2. The series of undo's gets added as a single edit event, which makes
+the undo history simpler; you don't have to individually redo each undo later on.
 
 To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
@@ -23,10 +33,11 @@ In the following gif, I enter some text, call ~undo-propose~, do a sequence of u
 ** Other notes
 
 See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree.el]] for a more powerful undo navigation system. Unfortunately,
-undo-tree frequently corrupts the undo history, leading to lost work
+many users experience occasional corruption issues, leading to lost work
 (for example, see [[https://github.com/emacs-evil/evil/issues/1074]]).
-It has a large and complex code-base, making it difficult to understand or modify.
 
-undo-propose avoids writing a new undo system, only lightly wrapping
-emacs' default undo. I hope this design will avoid the corruption issues
-that can affect more ambitious [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html][attempts]], while still improving the useability of emacs' undo.
+In contrast, undo-propose is meant
+to complement native emacs' undo, rather than replace it,
+and has an extremely simple implementation.
+It aims to improve the useability of emacs' undo,
+while avoiding the corruption issues that sometimes affect more ambitious [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html][attempts]].
