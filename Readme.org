@@ -11,9 +11,10 @@ On top of that, trying to find an old edit may add many undo's to the edit histo
 making the undo ring longer and more difficult to navigate later on.
 
 undo-propose addresses this by letting you undo inside a temporary buffer.
-This has 2 benefits:
+This has a few benefits:
 1. If you get lost, you can cancel the whole series of undo's, without modifying the original buffer or undo history.
 2. The series of undo's gets added as a single edit event, which makes the undo history simpler; you don't have to individually redo each undo later on.
+3. You can search through your undo history for old snippets, and copy and paste them back in, without having to add many extra undo's in your undo ring.
 
 To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
@@ -30,12 +31,6 @@ In the following gif, I enter some text, call ~undo-propose~, do a sequence of u
 
 ** Other notes
 
-See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree.el]] for a more powerful undo navigation system. Unfortunately,
-many users experience occasional corruption issues, leading to lost work
-(for example, see [[https://github.com/emacs-evil/evil/issues/1074]]).
+See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree.el]] for a more powerful undo navigation system. Unfortunately, many users experience corruption issues, leading to lost work (for example, see [[https://github.com/emacs-evil/evil/issues/1074]] and [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html]]).
 
-In contrast, undo-propose is meant
-to complement native emacs' undo, rather than replace it,
-and has an extremely simple implementation.
-It aims to improve the useability of emacs' undo,
-while avoiding the corruption issues that sometimes affect more ambitious [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html][attempts]].
+In contrast, undo-propose is much smaller, and meant to complement native emacs' undo rather than replace it. It tries to minimize direct interaction with undo internals, in order to reduce the likelihood of bugs that corrupt the undo history.
