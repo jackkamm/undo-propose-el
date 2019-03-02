@@ -37,6 +37,8 @@ In the following gif, I enter some text, call ~undo-propose~, do a sequence of u
 
 ** Other notes
 
-See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree.el]] for a more powerful undo navigation system. Unfortunately, many users experience corruption issues, leading to lost work (for example, see [[https://github.com/emacs-evil/evil/issues/1074]] and [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html]]).
+undo-propose is inspired by [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] and [[https://melpa.org/#/git-timemachine][git-timemachine]].
+
+See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] for a more powerful undo navigation system. Unfortunately, many users experience corruption issues, leading to lost work (for example, see [[https://github.com/emacs-evil/evil/issues/1074]] and [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html]]).
 
 In contrast, undo-propose is much smaller, and meant to complement native emacs' undo rather than replace it. It tries to minimize direct interaction with undo internals, in order to reduce the likelihood of bugs that corrupt the undo history.
