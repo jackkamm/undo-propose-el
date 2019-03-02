@@ -1,11 +1,11 @@
-;;; undo-propose --- Simple and safe undo navigation -*- lexical-binding: t -*-
+;;; undo-propose.el --- Simple and safe undo navigation -*- lexical-binding: t -*-
 
 ;; Author: Jack Kamm
 ;; Maintainer: Jack Kamm
-;; Version: 0.1
-;; Package-Requires: ()
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "24.3"))
 ;; Homepage: https://github.com/jackkamm/undo-propose.el
-;; Keywords: undo
+;; Keywords: convenience, files, undo, redo, history
 
 
 ;; This file is not part of GNU Emacs
