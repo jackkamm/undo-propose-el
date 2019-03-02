@@ -39,7 +39,7 @@
 
 ;;; Code:
 
-(defvar undo-propose-parent nil "Parent buffer of undo-propose buffer.")
+(defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
 ;;;###autoload
 (defun undo-propose ()
@@ -79,23 +79,23 @@ type \\[undo-propose-cancel], and to view an ediff type \\[undo-propose-diff]."
 (define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
 
 (defun undo-propose-undo ()
-  "Undo within an undo-propose buffer.
+  "Undo within an ‘undo-propose’ buffer.
 You should not directly call this; instead,`undo' is remapped to this
-command within undo-propose buffers."
+command within ‘undo-propose’ buffers."
   (interactive)
     (let ((buffer-read-only nil))
       (undo)))
 
 (defun undo-propose-undo-only ()
-  "Undo-only within an undo-propose buffer.
+  "Undo-only within an ‘undo-propose’ buffer.
 You should not directly call this; instead,`undo-only' is remapped to this
-command within undo-propose buffers."
+command within ‘undo-propose’ buffers."
   (interactive)
     (let ((buffer-read-only nil))
       (undo-only)))
 
 (defun undo-propose-finish ()
-  "Copy undo-propose buffer back to the parent buffer, then kill it.
+  "Copy ‘undo-propose’ buffer back to the parent buffer, then kill it.
 This change is added as a single edit in the undo history."
   (interactive)
   (let ((tmp-buffer (current-buffer))
@@ -109,7 +109,7 @@ This change is added as a single edit in the undo history."
     (message "Commit Undo-Propose!")))
 
 (defun undo-propose-cancel ()
-  "Kill undo-propose buffer without copying back to its parent."
+  "Kill ‘undo-propose’ buffer without copying back to its parent."
   (interactive)
   (let ((tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent))
@@ -118,7 +118,7 @@ This change is added as a single edit in the undo history."
     (message "Cancel Undo-Propose!")))
 
 (defun undo-propose-diff ()
-  "View differences between undo-propose buffer and its parent using `ediff'."
+  "View differences between ‘undo-propose’ buffer and its parent using `ediff'."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
 
