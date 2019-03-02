@@ -10,18 +10,24 @@ and so forth, as the same edit will be traversed multiple times backwards and fo
 On top of that, trying to find an old edit may add many undo's to the edit history,
 making the undo ring longer and more difficult to navigate later on.
 
-undo-propose addresses this by letting you undo inside a temporary buffer.
+~undo-propose~ addresses this by letting you undo inside a temporary buffer.
 This has a few benefits:
 1. If you get lost, you can cancel the whole series of undo's, without modifying the original buffer or undo history.
 2. The series of undo's gets added as a single edit event, which makes the undo history simpler; you don't have to individually redo each undo later on.
 3. You can search through your undo history for old snippets, and copy and paste them back in, without having to add many extra undo's in your undo ring.
 
-To use undo-propose, call "M-x undo-propose" in the buffer you are editing.
+** Installation
+
+~undo-propose~ is available on [[https://melpa.org/#/][MELPA]].
+
+** Usage
+
+To use undo-propose, call ~M-x undo-propose~ in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
-for allowing `undo' commands.  Cycle through the list of undo's as normal.
-When you are finished, type "C-c C-c" to add the chain of undo's as a
-single edit to the undo history.  To cancel, type "C-c C-k".  You can also
-ediff the proposed chain of undo's by typing "C-c C-d".
+for allowing ~undo~ commands.  Cycle through the list of undo's as normal.
+When you are finished, type ~C-c C-c~ to add the chain of undo's as a
+single edit to the undo history.  To cancel, type ~C-c C-k~.  You can also
+ediff the proposed chain of undo's by typing ~C-c C-d~.
 
 ** Screenshot
 
