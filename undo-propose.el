@@ -44,11 +44,12 @@
 ;;;###autoload
 (defun undo-propose ()
   "Navigate undo history in a new temporary buffer.
+\\<undo-propose-mode-map>
 Copies 'current-buffer' and 'buffer-undo-list' to a new temporary buffer,
 which is read-only except for undo commands.  After finished undoing, type
-\\<undo-propose-map> \\[undo-propose-finish] to add the chain of undos as a
-single edit to the original buffer and its 'buffer-undo-list'.  To cancel,
-type \\[undo-propose-cancel], and to view an ediff type \\[undo-propose-diff]."
+\\[undo-propose-finish] to add the chain of undos as a single edit to the original
+buffer and its 'buffer-undo-list'.  To cancel, type \\[undo-propose-cancel], and
+to view an ediff type \\[undo-propose-diff]."
   (interactive)
   (let ((mode major-mode)
         (orig-buffer (current-buffer))
