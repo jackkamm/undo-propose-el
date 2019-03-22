@@ -115,7 +115,6 @@ This change is added as a single edit in the undo history."
         (insert-buffer-substring tmp-buffer first-diff tmp-end)
         (goto-char first-diff)))
     (kill-buffer tmp-buffer)
-    (recenter)
     (message "Commit Undo-Propose!")))
 
 (defun undo-propose-cancel ()
@@ -124,7 +123,6 @@ This change is added as a single edit in the undo history."
   (let ((tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent))
     (kill-buffer tmp-buffer)
-    (switch-to-buffer orig-buffer)
     (message "Cancel Undo-Propose!")))
 
 (defun undo-propose-diff ()
