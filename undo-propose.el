@@ -73,27 +73,20 @@ to view an ediff type \\[undo-propose-diff]."
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
   nil " UndoP" (make-sparse-keymap))
-(define-key undo-propose-mode-map [remap undo] 'undo-propose-undo)
-(define-key undo-propose-mode-map [remap undo-only] 'undo-propose-undo-only)
 (define-key undo-propose-mode-map (kbd "C-c C-c") 'undo-propose-finish)
 (define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
 (define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
 
-(defun undo-propose-undo ()
-  "Undo within an ‘undo-propose’ buffer.
-You should not directly call this; instead,`undo' is remapped to this
-command within ‘undo-propose’ buffers."
-  (interactive)
-    (let ((inhibit-read-only t))
-      (undo)))
+(defmacro undo-propose-wrap (command)
+  "Wrap COMMAND so it is useable within the ‘undo-propose’ buffer."
+  `(define-key undo-propose-mode-map [remap ,command]
+    (lambda ()
+      (interactive)
+      (let ((inhibit-read-only t))
+        (call-interactively ',command)))))
 
-(defun undo-propose-undo-only ()
-  "Undo-only within an ‘undo-propose’ buffer.
-You should not directly call this; instead,`undo-only' is remapped to this
-command within ‘undo-propose’ buffers."
-  (interactive)
-    (let ((inhibit-read-only t))
-      (undo-only)))
+(undo-propose-wrap undo)
+(undo-propose-wrap undo-only)
 
 (defun undo-propose-finish ()
   "Copy ‘undo-propose’ buffer back to the parent buffer, then kill it.

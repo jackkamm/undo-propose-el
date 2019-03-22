@@ -35,6 +35,15 @@ In the following gif, I enter some text, call ~undo-propose~, do a sequence of u
 
 [[./assets/undo-ediff-commit-undo-redo.gif]]
 
+** Customization
+*** Adding commands
+
+The ~undo-propose~ buffer is read-only, so most commands won't work.
+However, ~undo~ and ~undo-only~ are specially wrapped so that they will work in the buffer.
+You can use the macro ~undo-propose-wrap~ to make additional commands useable in ~undo-propose~.
+For example, to add [[https://www.emacswiki.org/emacs/RedoMode][redo]],
+call ~(undo-propose-wrap redo)~.
+
 ** Limitations
 
 Avoid using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html][region narrowing]] in conjunction with ~undo-propose~, as it may not work correctly.
