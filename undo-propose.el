@@ -59,7 +59,7 @@ to view an ediff type \\[undo-propose-diff]."
         (tmp-buffer (generate-new-buffer
                      (concat "*Undo Propose: "
                              (buffer-name) "*"))))
-    (switch-to-buffer tmp-buffer)
+    (switch-to-buffer tmp-buffer nil t)
     (funcall mode)
     (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
     (goto-char pos)
