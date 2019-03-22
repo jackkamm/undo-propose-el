@@ -61,7 +61,7 @@ to view an ediff type \\[undo-propose-diff]."
                              (buffer-name) "*"))))
     (switch-to-buffer tmp-buffer)
     (funcall mode)
-    (insert-buffer-substring orig-buffer)
+    (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
     (goto-char pos)
     (set-window-start (selected-window) win-start)
     (setq-local buffer-undo-list list-copy)
@@ -100,11 +100,9 @@ command within ‘undo-propose’ buffers."
 This change is added as a single edit in the undo history."
   (interactive)
   (let* ((tmp-buffer (current-buffer))
-         (tmp-end (point-max))
-         (pos (point))
-         (win-start (window-start))
+         (tmp-end (1+ (buffer-size tmp-buffer)))
          (orig-buffer undo-propose-parent)
-         (orig-end (+ 1 (buffer-size orig-buffer)))
+         (orig-end (1+ (buffer-size orig-buffer)))
          (first-diff (abs (compare-buffer-substrings
                            tmp-buffer 1 tmp-end orig-buffer 1 orig-end))))
     ;; copy from 1st diff, so we don't jump to top of buffer when redoing

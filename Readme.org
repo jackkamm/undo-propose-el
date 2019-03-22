@@ -35,6 +35,10 @@ In the following gif, I enter some text, call ~undo-propose~, do a sequence of u
 
 [[./assets/undo-ediff-commit-undo-redo.gif]]
 
+** Limitations
+
+Avoid using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html][region narrowing]] in conjunction with ~undo-propose~, as it may not work correctly.
+
 ** Other notes
 
 undo-propose is inspired by [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] and [[https://melpa.org/#/git-timemachine][git-timemachine]].
