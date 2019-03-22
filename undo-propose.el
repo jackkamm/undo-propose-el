@@ -99,14 +99,23 @@ command within ‘undo-propose’ buffers."
   "Copy ‘undo-propose’ buffer back to the parent buffer, then kill it.
 This change is added as a single edit in the undo history."
   (interactive)
-  (let ((tmp-buffer (current-buffer))
-        (orig-buffer undo-propose-parent)
-        (pos (point))
-        (win-start (window-start)))
-    (copy-to-buffer orig-buffer 1 (buffer-end 1))
+  (let* ((tmp-buffer (current-buffer))
+         (tmp-end (point-max))
+         (pos (point))
+         (win-start (window-start))
+         (orig-buffer undo-propose-parent)
+         (orig-end (+ 1 (buffer-size orig-buffer)))
+         (first-diff (abs (compare-buffer-substrings
+                           tmp-buffer 1 tmp-end orig-buffer 1 orig-end))))
+    ;; copy from 1st diff, so we don't jump to top of buffer when redoing
+    (with-current-buffer orig-buffer
+      (when (/= first-diff 0)
+        (delete-region first-diff (point-max))
+        (goto-char (point-max))
+        (insert-buffer-substring tmp-buffer first-diff tmp-end)
+        (goto-char first-diff)))
     (kill-buffer tmp-buffer)
-    (goto-char pos)
-    (set-window-start (selected-window) win-start)
+    (recenter)
     (message "Commit Undo-Propose!")))
 
 (defun undo-propose-cancel ()
