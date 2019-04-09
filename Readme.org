@@ -10,11 +10,11 @@ and so forth, as the same edit will be traversed multiple times backwards and fo
 On top of that, trying to find an old edit can add many undo's to the edit history,
 making the undo ring longer and more difficult to navigate later on.
 
-~undo-propose~ addresses this by letting you undo inside a temporary buffer.
+~undo-propose~ addresses this by letting you stage undo's inside a temporary buffer.
 This has a few benefits:
 1. If you get lost, you can cancel the whole series of undo's, without modifying the original buffer or undo history.
-2. The series of undo's gets added as a single edit event, which makes the undo history simpler; you don't have to individually redo each undo later on.
-3. You can search through your undo history for old snippets, and copy and paste them back in, without having to add many extra undo's in your undo ring.
+2. You can search through your undo history for old snippets, copy and paste them back in manually, then discard the rest of the undo's.
+3. When finished undo'ing, you can choose to squash the undo's and add them as a single edit event. This makes the undo history shorter; to go back, you only have to undo 1 step, rather than redo'ing each undo individually.
 
 ** Installation
 
@@ -25,8 +25,9 @@ This has a few benefits:
 To use undo-propose, call ~M-x undo-propose~ in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
 for allowing ~undo~ commands.  Cycle through the list of undo's as normal.
-When you are finished, type ~C-c C-c~ to add the chain of undo's as a
-single edit to the undo history.  To cancel, type ~C-c C-k~.  You can also
+When you are finished, type ~C-c C-c~ to copy both the buffer and the undo-ring
+back to the parent. Alternatively, type ~C-c C-b~ to copy the buffer but
+not the individual undo events (squashing them into a single copy event in the edit history). To cancel, type ~C-c C-k~.  You can also
 ediff the proposed chain of undo's by typing ~C-c C-d~.
 
 ** Screenshot
@@ -55,3 +56,9 @@ undo-propose is inspired by [[https://www.emacswiki.org/emacs/UndoTree][undo-tre
 See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] for a more powerful undo navigation system. Unfortunately, many users experience corruption issues, leading to lost work (for example, see [[https://github.com/emacs-evil/evil/issues/1074]] and [[http://ergoemacs.org/emacs/emacs_best_redo_mode.html]]).
 
 In contrast, undo-propose is much smaller, and meant to complement native emacs' undo rather than replace it. It tries to minimize direct interaction with undo internals, in order to reduce the likelihood of bugs that corrupt the undo history.
+** Changes
+*** 2.0.0
+
+~C-c C-c~ in the undo-propose buffer now commits to the undo-history (~undo-propose-commit~).
+To copy the buffer but not the undo-history (squashing the undo's), use ~C-c C-b~ (~undo-propose-commit-buffer-only~).
+The old function ~undo-propose-finish~ is now obsolete; use ~undo-propose-commit-buffer-only~ instead.
