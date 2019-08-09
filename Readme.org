@@ -25,9 +25,9 @@ This has a few benefits:
 To use undo-propose, call ~M-x undo-propose~ in the buffer you are editing.
 This will send you to a new temporary buffer, which is read-only except
 for allowing ~undo~ commands.  Cycle through the list of undo's as normal.
-When you are finished, type ~C-c C-c~ to copy both the buffer and the undo-ring
-back to the parent. Alternatively, type ~C-c C-b~ to copy the buffer but
-not the individual undo events (squashing them into a single copy event in the edit history). To cancel, type ~C-c C-k~.  You can also
+When you are finished, type ~C-c C-c~ to commit the changes (both in the buffer and undo-ring)
+back to the parent. Alternatively, type ~C-c C-s~ to copy the buffer but
+not the individual undo events (squashing them into a single edit event in the undo history). To cancel, type ~C-c C-k~.  You can also
 ediff the proposed chain of undo's by typing ~C-c C-d~.
 
 ** Screenshot
@@ -57,6 +57,12 @@ See [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] for a more powerful 
 
 In contrast, undo-propose is much smaller, and meant to complement native emacs' undo rather than replace it. It tries to minimize direct interaction with undo internals, in order to reduce the likelihood of bugs that corrupt the undo history.
 ** Changes
+*** 3.0.0
+
+~undo-propose-commit-buffer-only~ was renamed to
+~undo-propose-squash-commit~, and its keybinding ~C-c C-b~ was moved
+to ~C-c C-s~
+
 *** 2.0.0
 
 ~C-c C-c~ in the undo-propose buffer now commits to the undo-history (~undo-propose-commit~).

@@ -51,7 +51,7 @@
 Copies 'current-buffer' and 'buffer-undo-list' to a new temporary buffer,
 which is read-only except for undo commands.  After finished undoing, type
 \\[undo-propose-commit] to accept the chain of undos,
-or \\[undo-propose-commit-buffer-only] to copy the buffer but squash the undo's into a single edit event event.  To cancel, type \\[undo-propose-cancel], and
+or \\[undo-propose-squash-commit] to copy the buffer but squash the undo's into a single edit event event.  To cancel, type \\[undo-propose-cancel], and
 to view an ediff type \\[undo-propose-diff]."
   (interactive)
   (let ((mode major-mode)
@@ -71,13 +71,13 @@ to view an ediff type \\[undo-propose-diff]."
     (setq-local buffer-read-only t)
     (setq-local undo-propose-parent orig-buffer)
     (undo-propose-mode 1)
-    (message "Undo-Propose: C-c C-c to commit buffer & undo-ring, C-c C-b to commit buffer only, C-c C-k to cancel, C-c C-d to diff")))
+    (message "undo-propose: C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff")))
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
   nil " UndoP" (make-sparse-keymap))
 (define-key undo-propose-mode-map (kbd "C-c C-c") 'undo-propose-commit)
-(define-key undo-propose-mode-map (kbd "C-c C-b") 'undo-propose-commit-buffer-only)
+(define-key undo-propose-mode-map (kbd "C-c C-s") 'undo-propose-squash-commit)
 (define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
 (define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
 
@@ -106,12 +106,12 @@ to view an ediff type \\[undo-propose-diff]."
     (kill-buffer tmp-buffer)
     (goto-char pos)
     (set-window-start (selected-window) win-start)
-    (message "Commit Undo-Propose!")))
+    (message "undo-propose: commit")))
 
-(defun undo-propose-commit-buffer-only ()
-  "Copy ‘undo-propose’ buffer back to the parent buffer, then kill it.
-This change is added as a single edit in the undo history (i.e., the undo-ring
-is NOT copied to the parent buffer's undo-ring)."
+(defun undo-propose-squash-commit ()
+  "Like `undo-propose-commit', but squashing undos into a single edit.
+That is, the undo-ring is NOT copied to the parent, only the
+buffer contents are copied."
   (interactive)
   (let* ((tmp-buffer (current-buffer))
          (tmp-end (1+ (buffer-size tmp-buffer)))
@@ -127,10 +127,12 @@ is NOT copied to the parent buffer's undo-ring)."
         (insert-buffer-substring tmp-buffer first-diff tmp-end)
         (goto-char first-diff)))
     (kill-buffer tmp-buffer)
-    (message "Commit Undo-Propose!")))
+    (message "undo-propose: squash commit")))
+(define-obsolete-function-alias 'undo-propose-commit-buffer-only
+  'undo-propose-squash-commit "3.0.0")
 
 (define-obsolete-function-alias 'undo-propose-finish
-  'undo-propose-commit-buffer-only "2.0.0")
+  'undo-propose-squash-commit "3.0.0")
 
 (defun undo-propose-cancel ()
   "Kill ‘undo-propose’ buffer without copying back to its parent."
