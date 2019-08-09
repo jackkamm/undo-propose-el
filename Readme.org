@@ -57,11 +57,6 @@ will work in the buffer.  You can use the macro ~undo-propose-wrap~ to
 make additional commands useable in ~undo-propose~.  For example, to
 add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap redo)~.
 
-** Limitations
-
-Avoid using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html][region narrowing]] in conjunction with ~undo-propose~, as it
-may not work correctly.
-
 ** Other notes
 
 undo-propose is inspired by [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] and [[https://melpa.org/#/git-timemachine][git-timemachine]].
