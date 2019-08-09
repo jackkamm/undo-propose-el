@@ -72,6 +72,8 @@ native emacs' undo rather than replace it. It tries to minimize direct
 interaction with undo internals, in order to reduce the likelihood of
 bugs that corrupt the undo history.
 
+For a nice overview of the emacs undo system, see this [[https://www.reddit.com/r/emacs/comments/6yzwic/how_emacs_undo_works/][reddit post]].
+
 ** Changes
 *** 3.0.0
 
