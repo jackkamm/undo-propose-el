@@ -2,7 +2,7 @@
 
 ;; Author: Jack Kamm
 ;; Maintainer: Jack Kamm
-;; Version: 2.0.0
+;; Version: 3.0.0
 ;; Package-Requires: ((emacs "24.3"))
 ;; Homepage: https://github.com/jackkamm/undo-propose.el
 ;; Keywords: convenience, files, undo, redo, history
