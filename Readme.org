@@ -3,14 +3,13 @@
 ~undo-propose.el~ is a package that allows you to stage undo's in a
 temporary buffer before committing them.
 
-Emacs treats previous undo's as ordinary changes that can themselves
-be undone, making it possible to revisit any point in your edit
-history.  However, the undo system can also be confusing -- it's easy
-to get turned around when moving through a chain of undo's, undo's of
-undo's, and so forth, as the same edit will be traversed multiple
-times backwards and forwards.  On top of that, trying to find an old
-edit can add many undo's to the edit history, making the undo ring
-longer and more difficult to navigate later on.
+Emacs' undo system is powerful, but difficult to navigate, due to the
+fact that Emacs treats previous undo's as ordinary changes that can
+themselves be undone. One can get lost when moving through a chain of
+undo's, undo's of undo's, and so forth, as the same edit will be
+traversed multiple times backwards and forwards.  On top of that,
+trying to find an old edit can add many undo's to the edit history,
+making the undo ring longer and more difficult to navigate later on.
 
 ~undo-propose~ addresses this by letting you stage undo's inside a
 temporary buffer.  This has a few benefits:
@@ -22,6 +21,13 @@ temporary buffer.  This has a few benefits:
    them as a single edit event. This makes the undo history shorter;
    to go back, you only have to undo 1 step, rather than redo'ing each
    undo individually.
+
+** Screenshot
+
+Example of searching the undo history (right) for an old paragraph,
+and pasting it back into the original buffer (left):
+
+[[./assets/undo-propose.gif]]
 
 ** Installation
 
@@ -39,17 +45,30 @@ individual undo events (squashing them into a single edit event in the
 undo history). To cancel, type ~C-c C-k~.  You can also ediff the
 proposed chain of undo's by typing ~C-c C-d~.
 
-** Screenshot
+** Example configurations
+*** Simple configuration
 
-In the following gif, I enter some text, call ~undo-propose~, do a
-sequence of undo's and redo's within the ~undo-propose~ buffer,
-compare against the original buffer with ~ediff~, commit the sequence
-of undo's, and finally undo (redo) the change made by ~undo-propose~.
+#+begin_src emacs-lisp
+  (require 'undo-propose)
+  (global-set-key (kbd "C-c u") 'undo-propose)
+#+end_src
 
-[[./assets/undo-ediff-commit-undo-redo.gif]]
+*** Opinionated evil configuration
 
-** Customization
-*** Adding commands
+#+begin_src emacs-lisp
+  (with-eval-after-load 'evil
+    (global-undo-tree-mode -1)
+    (evil-define-key 'normal 'global "u" 'undo-only))
+
+  (use-package undo-propose
+    :commands undo-propose
+    :init
+    (evil-define-key 'normal 'global (kbd "C-r") 'undo-propose)
+    :config
+    (evil-define-minor-mode-key 'normal 'undo-propose-mode (kbd "C-r") 'undo))
+#+end_src
+
+** Adding commands (e.g. redo)
 
 The ~undo-propose~ buffer is read-only, so most commands won't work.
 However, ~undo~ and ~undo-only~ are specially wrapped so that they
@@ -57,7 +76,7 @@ will work in the buffer.  You can use the macro ~undo-propose-wrap~ to
 make additional commands useable in ~undo-propose~.  For example, to
 add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap redo)~.
 
-** Other notes
+** Related packages
 
 undo-propose is inspired by [[https://www.emacswiki.org/emacs/UndoTree][undo-tree]] and [[https://melpa.org/#/git-timemachine][git-timemachine]].
 
@@ -72,7 +91,10 @@ native emacs' undo rather than replace it. It tries to minimize direct
 interaction with undo internals, in order to reduce the likelihood of
 bugs that corrupt the undo history.
 
-For a nice overview of the emacs undo system, see this [[https://www.reddit.com/r/emacs/comments/6yzwic/how_emacs_undo_works/][reddit post]].
+** References
+
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Undo.html][GNU Emacs Manual - Undo]]
+- [[https://www.reddit.com/r/emacs/comments/6yzwic/how_emacs_undo_works/][reddit.com/r/emacs: How Emacs undo works]]
 
 ** Changes
 *** 3.0.0
