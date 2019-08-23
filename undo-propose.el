@@ -141,6 +141,7 @@ buffer contents are copied."
   (interactive)
   (let ((tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent))
+    (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
     (message "Cancel Undo-Propose!")))
 
