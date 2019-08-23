@@ -55,7 +55,7 @@ or \\[undo-propose-squash-commit] to copy the buffer but squash the undo's into 
 to view an ediff type \\[undo-propose-diff]."
   (interactive)
   (if (bound-and-true-p undo-propose-mode)
-      (undo-only)
+      (undo)
     (let ((mode major-mode)
           (orig-buffer (current-buffer))
           (list-copy (undo-copy-list buffer-undo-list))
