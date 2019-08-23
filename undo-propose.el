@@ -42,6 +42,8 @@
 
 ;;; Code:
 
+(require 'redo+)
+
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
 ;;;###autoload
@@ -80,17 +82,22 @@ to view an ediff type \\[undo-propose-diff]."
 (define-key undo-propose-mode-map (kbd "C-c C-s") 'undo-propose-squash-commit)
 (define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
 (define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
+(define-key undo-propose-mode-map (kbd "u") 'undo+)
+(define-key undo-propose-mode-map (kbd "r") 'redo+)
+
 
 (defmacro undo-propose-wrap (command)
   "Wrap COMMAND so it is useable within the ‘undo-propose’ buffer."
   `(define-key undo-propose-mode-map [remap ,command]
-    (lambda ()
-      (interactive)
-      (let ((inhibit-read-only t))
-        (call-interactively ',command)))))
+     (lambda ()
+       (interactive)
+       (let ((inhibit-read-only t))
+         (call-interactively ',command)))))
 
 (undo-propose-wrap undo)
 (undo-propose-wrap undo-only)
+(undo-propose-wrap undo+)
+(undo-propose-wrap redo+)
 
 (defun undo-propose-commit ()
   "Quit and copy ‘undo-propose’ buffer and undo-ring back to the parent buffer."
