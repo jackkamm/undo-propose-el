@@ -54,7 +54,8 @@ which is read-only except for undo commands.  After finished undoing, type
 or \\[undo-propose-squash-commit] to copy the buffer but squash the undo's into a single edit event event.  To cancel, type \\[undo-propose-cancel], and
 to view an ediff type \\[undo-propose-diff]."
   (interactive)
-  (unless (bound-and-true-p undo-propose-mode)
+  (if (bound-and-true-p undo-propose-mode)
+      (undo-only)
     (let ((mode major-mode)
           (orig-buffer (current-buffer))
           (list-copy (undo-copy-list buffer-undo-list))
