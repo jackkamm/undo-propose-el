@@ -52,7 +52,9 @@ Copies 'current-buffer' and 'buffer-undo-list' to a new temporary buffer,
 which is read-only except for undo commands.  After finished undoing, type
 \\[undo-propose-commit] to accept the chain of undos,
 or \\[undo-propose-squash-commit] to copy the buffer but squash the undo's into a single edit event event.  To cancel, type \\[undo-propose-cancel], and
-to view an ediff type \\[undo-propose-diff]."
+to view an ediff type \\[undo-propose-diff].
+
+If already inside an undo-propose buffer, this will simply call `undo'."
   (interactive)
   (if (bound-and-true-p undo-propose-mode)
       (undo)

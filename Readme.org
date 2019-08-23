@@ -37,9 +37,10 @@ and pasting it back into the original buffer (left):
 
 To use undo-propose, call ~M-x undo-propose~ in the buffer you are
 editing.  This will send you to a new temporary buffer, which is
-read-only except for allowing ~undo~ commands.  Cycle through the list
-of undo's as normal.  When you are finished, type ~C-c C-c~ to commit
-the changes (both in the buffer and undo-ring) back to the
+read-only except for allowing ~undo~ commands.  In this buffer, call
+~undo~ as you normally would, until you have reached your desired
+place in the undo history.  When you are finished, type ~C-c C-c~ to
+commit the changes (both in the buffer and undo-ring) back to the
 parent. Alternatively, type ~C-c C-s~ to copy the buffer but not the
 individual undo events (squashing them into a single edit event in the
 undo history). To cancel, type ~C-c C-k~.  You can also ediff the
@@ -63,9 +64,7 @@ proposed chain of undo's by typing ~C-c C-d~.
   (use-package undo-propose
     :commands undo-propose
     :init
-    (evil-define-key 'normal 'global (kbd "C-r") 'undo-propose)
-    :config
-    (evil-define-minor-mode-key 'normal 'undo-propose-mode (kbd "C-r") 'undo))
+    (evil-define-key 'normal 'global (kbd "C-r") 'undo-propose))
 #+end_src
 
 ** Adding commands (e.g. redo)
