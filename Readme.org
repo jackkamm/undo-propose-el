@@ -68,7 +68,7 @@ proposed chain of undo's by typing ~C-c C-d~.
 #+end_src
 
 Note that ~undo-propose~ (~C-r~ in this configuration) acts as normal
-~undo~ within the undo-propose buffer.
+~undo~ when already in an ~undo-propose-mode~ buffer.
 
 ** Adding commands (e.g. redo)
 
