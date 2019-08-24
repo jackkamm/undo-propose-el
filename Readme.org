@@ -67,8 +67,8 @@ proposed chain of undo's by typing ~C-c C-d~.
     (evil-define-key 'normal 'global (kbd "C-r") 'undo-propose))
 #+end_src
 
-Note that ~undo-propose~ (~C-r~ in this configuration) acts as normal
-~undo~ when already in an ~undo-propose-mode~ buffer.
+Note that ~undo-propose~ (~C-r~ in this configuration) just calls
+~undo~ if you're already in an ~undo-propose-mode~ buffer.
 
 ** Adding commands (e.g. redo)
 
