@@ -66,9 +66,11 @@ If already inside an undo-propose buffer, this will simply call `undo'."
           (tmp-buffer (generate-new-buffer
                        (concat "*Undo Propose: "
                                (buffer-name) "*"))))
+      (with-current-buffer tmp-buffer
+        (funcall mode)
+        (insert-buffer-substring orig-buffer
+                                 1 (1+ (buffer-size orig-buffer))))
       (switch-to-buffer tmp-buffer nil t)
-      (funcall mode)
-      (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
       (goto-char pos)
       (set-window-start (selected-window) win-start)
       (setq-local buffer-undo-list list-copy)
