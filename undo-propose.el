@@ -42,6 +42,15 @@
 
 ;;; Code:
 
+(defgroup undo-propose nil
+  "Simple and safe undo navigation"
+  :group 'convenience)
+
+(defcustom undo-propose-done-hook nil
+  "Hook runs when leaving the temporal buffer."
+  :type 'hook
+  :group 'undo-propose)
+
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
 ;;;###autoload
@@ -111,7 +120,8 @@ If already inside an undo-propose buffer, this will simply call `undo'."
     (kill-buffer tmp-buffer)
     (goto-char pos)
     (set-window-start (selected-window) win-start)
-    (message "undo-propose: commit")))
+    (message "undo-propose: commit"))
+  (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-squash-commit ()
   "Like `undo-propose-commit', but squashing undos into a single edit.
@@ -133,7 +143,8 @@ buffer contents are copied."
         (goto-char first-diff)))
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (message "undo-propose: squash commit")))
+    (message "undo-propose: squash commit"))
+  (run-hooks 'undo-propose-done-hook))
 (define-obsolete-function-alias 'undo-propose-commit-buffer-only
   'undo-propose-squash-commit "3.0.0")
 
@@ -147,7 +158,8 @@ buffer contents are copied."
         (orig-buffer undo-propose-parent))
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (message "Cancel Undo-Propose!")))
+    (message "Cancel Undo-Propose!"))
+  (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-diff ()
   "View differences between ‘undo-propose’ buffer and its parent using `ediff'."
