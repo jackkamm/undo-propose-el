@@ -169,7 +169,7 @@ buffer contents are copied."
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
     (when org-clock-marker-pos
-      (set-marker org-clock-marker org-clock-marker-pos))
+      (move-marker org-clock-marker org-clock-marker-pos))
     (message "undo-propose: squash commit"))
   (run-hooks 'undo-propose-done-hook))
 (define-obsolete-function-alias 'undo-propose-commit-buffer-only
