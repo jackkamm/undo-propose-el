@@ -53,6 +53,20 @@
 
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
+(defun undo-propose--message (content &optional shorten no-prefix)
+  "Return modified CONTENT by adding prefix.
+If SHORTEN is no-nil, modified CONTENT may have prefix based on `frame-width'.
+If NO-PREFIX is no-nil, just return CONTENT without prefix."
+  (let ((prefix "undo-propose: "))
+    (message
+     (concat (unless no-prefix
+               (if shorten
+                   (when (> (frame-width)
+                            (+ (length prefix) (length content)))
+                     prefix)
+                 prefix))
+             content))))
+
 ;;;###autoload
 (defun undo-propose ()
   "Navigate undo history in a new temporary buffer.
@@ -63,7 +77,7 @@ which is read-only except for undo commands.  After finished undoing, type
 or \\[undo-propose-squash-commit] to copy the buffer but squash the undo's into a single edit event event.  To cancel, type \\[undo-propose-cancel], and
 to view an ediff type \\[undo-propose-diff].
 
-If already inside an undo-propose buffer, this will simply call `undo'."
+If already inside an `undo-propose' buffer, this will simply call `undo'."
   (interactive)
   (if (bound-and-true-p undo-propose-mode)
       (undo)
@@ -84,7 +98,7 @@ If already inside an undo-propose buffer, this will simply call `undo'."
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
       (undo-propose-mode 1)
-      (message "undo-propose: C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
+      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff" t))))
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
@@ -120,7 +134,7 @@ If already inside an undo-propose buffer, this will simply call `undo'."
     (kill-buffer tmp-buffer)
     (goto-char pos)
     (set-window-start (selected-window) win-start)
-    (message "undo-propose: commit"))
+    (undo-propose--message "commit"))
   (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-squash-commit ()
@@ -143,7 +157,7 @@ buffer contents are copied."
         (goto-char first-diff)))
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (message "undo-propose: squash commit"))
+    (undo-propose--message "squash commit"))
   (run-hooks 'undo-propose-done-hook))
 (define-obsolete-function-alias 'undo-propose-commit-buffer-only
   'undo-propose-squash-commit "3.0.0")
@@ -158,7 +172,7 @@ buffer contents are copied."
         (orig-buffer undo-propose-parent))
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (message "Cancel Undo-Propose!"))
+    (undo-propose--message "Cancel Undo-Propose!" nil t))
   (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-diff ()
