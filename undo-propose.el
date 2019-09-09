@@ -53,18 +53,13 @@
 
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
-(defun undo-propose--message (content &optional shorten no-prefix)
-  "Return modified CONTENT by adding prefix.
-If SHORTEN is no-nil, modified CONTENT may have prefix based on `frame-width'.
-If NO-PREFIX is no-nil, just return CONTENT without prefix."
+(defun undo-propose--message (content)
+  "Message CONTENT, possibly with prefix \"undo-propose: \"."
   (let ((prefix "undo-propose: "))
     (message
-     (concat (unless no-prefix
-               (if shorten
-                   (when (> (frame-width)
-                            (+ (length prefix) (length content)))
-                     prefix)
-                 prefix))
+     (concat (when (> (frame-width)
+                      (+ (length prefix) (length content)))
+               prefix)
              content))))
 
 ;;;###autoload
@@ -98,7 +93,7 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
       (undo-propose-mode 1)
-      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff" t))))
+      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
@@ -172,7 +167,7 @@ buffer contents are copied."
         (orig-buffer undo-propose-parent))
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (undo-propose--message "Cancel Undo-Propose!" nil t))
+    (undo-propose--message "cancel"))
   (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-diff ()
