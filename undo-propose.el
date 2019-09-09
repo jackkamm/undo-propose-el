@@ -51,6 +51,11 @@
   :type 'hook
   :group 'undo-propose)
 
+(defcustom undo-propose-immediate-undo nil
+  "If non-nil, `undo' even when `undo-propose-mode' is activated."
+  :type 'hook
+  :group 'undo-propose)
+
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
 (defun undo-propose--message (content)
@@ -93,7 +98,9 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
       (undo-propose-mode 1)
-      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
+      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff")
+      (when undo-propose-immediate-undo
+        (undo)))))
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
