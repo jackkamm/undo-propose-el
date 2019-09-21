@@ -42,23 +42,23 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defgroup undo-propose nil
   "Simple and safe undo navigation"
   :group 'convenience)
 
 (defcustom undo-propose-done-hook nil
-  "Hook runs when initially entering the temporal buffer."
-  :type 'hook
-  :group 'undo-propose)
-
-(defcustom undo-propose-entry-hook nil
   "Hook runs when leaving the temporal buffer."
   :type 'hook
   :group 'undo-propose)
 
+(defcustom undo-propose-entry-hook nil
+  "Hook runs when entering the temporal buffer."
+  :type 'hook
+  :group 'undo-propose)
+
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
-(defvar undo-propose--org-clock-marker nil "Backup of `org-clock-marker'.")
-(make-variable-buffer-local 'undo-propose--org-clock-marker)
 
 (defun undo-propose--message (content)
   "Message CONTENT, possibly with prefix \"undo-propose: \"."
@@ -99,14 +99,8 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
       (setq-local buffer-undo-list list-copy)
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
-      (when (and (eq major-mode 'org-mode)
-                 (org-clock-is-active)
-                 (eq undo-propose-parent
-                     (marker-buffer org-clock-marker)))
-        (setq undo-propose--org-clock-marker (make-marker))
-        (move-marker undo-propose--org-clock-marker
-                     (marker-position org-clock-marker)))
       (undo-propose-mode 1)
+      (undo-propose-copy-markers)
       (run-hooks 'undo-propose-entry-hook)
       (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
 
@@ -136,23 +130,15 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
         (orig-buffer undo-propose-parent)
         (list-copy (undo-copy-list buffer-undo-list))
         (pos (point))
-        (win-start (window-start))
-        (org-clock-marker-pos
-         (when (and (eq major-mode 'org-mode)
-                    (org-clock-is-active)
-                    (eq undo-propose-parent
-                        (marker-buffer org-clock-marker))
-                    (marker-position undo-propose--org-clock-marker))
-           (marker-position undo-propose--org-clock-marker))))
+        (win-start (window-start)))
     (copy-to-buffer orig-buffer 1 (buffer-end 1))
     (with-current-buffer orig-buffer
       (setq-local buffer-undo-list list-copy))
+    (undo-propose-update-markers)
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
     (goto-char pos)
     (set-window-start (selected-window) win-start)
-    (when org-clock-marker-pos
-      (move-marker org-clock-marker org-clock-marker-pos))
     (undo-propose--message "commit"))
   (run-hooks 'undo-propose-done-hook))
 
@@ -166,14 +152,7 @@ buffer contents are copied."
          (orig-buffer undo-propose-parent)
          (orig-end (1+ (buffer-size orig-buffer)))
          (first-diff (abs (compare-buffer-substrings
-                           tmp-buffer 1 tmp-end orig-buffer 1 orig-end)))
-         (org-clock-marker-pos
-          (when (and (eq major-mode 'org-mode)
-                     (org-clock-is-active)
-                     (eq undo-propose-parent
-                         (marker-buffer org-clock-marker))
-                     (marker-position undo-propose--org-clock-marker))
-            (marker-position undo-propose--org-clock-marker))))
+                           tmp-buffer 1 tmp-end orig-buffer 1 orig-end))))
     ;; copy from 1st diff, so we don't jump to top of buffer when redoing
     (with-current-buffer orig-buffer
       (when (/= first-diff 0)
@@ -181,10 +160,9 @@ buffer contents are copied."
         (goto-char (point-max))
         (insert-buffer-substring tmp-buffer first-diff tmp-end)
         (goto-char first-diff)))
+    (undo-propose-update-markers)
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
-    (when org-clock-marker-pos
-      (move-marker org-clock-marker org-clock-marker-pos))
     (undo-propose--message "squash commit"))
   (run-hooks 'undo-propose-done-hook))
 (define-obsolete-function-alias 'undo-propose-commit-buffer-only
@@ -207,6 +185,33 @@ buffer contents are copied."
   "View differences between ‘undo-propose’ buffer and its parent using `ediff'."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
+
+(defvar undo-propose-marker-list nil
+  "List of markers to update after running undo-propose.")
+
+(defun undo-propose-copy-markers ()
+  "Copy markers registered in `undo-propose-marker-list'."
+  (setq-local undo-propose-marker-map
+              (cl-loop for orig-marker in undo-propose-marker-list
+                       if (eq (marker-buffer orig-marker) undo-propose-parent)
+                       collect
+                       (let ((new-marker (make-marker)))
+                         (move-marker new-marker (marker-position orig-marker))
+                         (cons new-marker orig-marker)))))
+
+(defun undo-propose-update-markers ()
+  "Update marker positions in parent buffer."
+  (cl-loop for association in undo-propose-marker-map do
+           (let ((new-marker (car association))
+                 (orig-marker (cdr association)))
+             ;; only update if orig-marker still exists
+             (when (and (markerp orig-marker)
+                        (eq (marker-buffer orig-marker) undo-propose-parent))
+               (move-marker orig-marker (marker-position new-marker)
+                            undo-propose-parent)))))
+
+(with-eval-after-load 'org
+  (add-to-list 'undo-propose-marker-list org-clock-marker))
 
 (provide 'undo-propose)
 
