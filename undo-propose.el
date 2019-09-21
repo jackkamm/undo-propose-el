@@ -47,6 +47,11 @@
   :group 'convenience)
 
 (defcustom undo-propose-done-hook nil
+  "Hook runs when initially entering the temporal buffer."
+  :type 'hook
+  :group 'undo-propose)
+
+(defcustom undo-propose-entry-hook nil
   "Hook runs when leaving the temporal buffer."
   :type 'hook
   :group 'undo-propose)
@@ -93,6 +98,7 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
       (undo-propose-mode 1)
+      (run-hooks 'undo-propose-entry-hook)
       (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
 
 (define-minor-mode undo-propose-mode

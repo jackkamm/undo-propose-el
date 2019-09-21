@@ -46,15 +46,30 @@ individual undo events (squashing them into a single edit event in the
 undo history). To cancel, type ~C-c C-k~.  You can also ediff the
 proposed chain of undo's by typing ~C-c C-d~.
 
-** Example configurations
-*** Simple configuration
+** Configuration
+*** Adding commands (e.g. redo)
+
+The ~undo-propose~ buffer is read-only, so most commands won't work.
+However, ~undo~ and ~undo-only~ are specially wrapped so that they
+will work in the buffer.  You can use the macro ~undo-propose-wrap~ to
+make additional commands useable in ~undo-propose~.  For example, to
+add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap redo)~.
+
+*** Hooks
+
+- ~undo-propose-entry-hook~ is run after staring undo-propose
+- ~undo-propose-done-hook~ is run after committing or squash
+  committing an undo-propose
+
+*** Example configurations
+**** Simple configuration
 
 #+begin_src emacs-lisp
   (require 'undo-propose)
   (global-set-key (kbd "C-c u") 'undo-propose)
 #+end_src
 
-*** Opinionated evil configuration
+**** Opinionated evil configuration
 
 #+begin_src emacs-lisp
   (with-eval-after-load 'evil
@@ -69,14 +84,6 @@ proposed chain of undo's by typing ~C-c C-d~.
 
 Note that ~undo-propose~ (~C-r~ in this configuration) just calls
 ~undo~ if you're already in an ~undo-propose-mode~ buffer.
-
-** Adding commands (e.g. redo)
-
-The ~undo-propose~ buffer is read-only, so most commands won't work.
-However, ~undo~ and ~undo-only~ are specially wrapped so that they
-will work in the buffer.  You can use the macro ~undo-propose-wrap~ to
-make additional commands useable in ~undo-propose~.  For example, to
-add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap redo)~.
 
 ** Related packages
 
