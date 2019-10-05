@@ -42,18 +42,26 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defgroup undo-propose nil
   "Simple and safe undo navigation"
   :group 'convenience)
 
 (defcustom undo-propose-done-hook nil
-  "Hook runs when initially entering the temporal buffer."
+  "Hook runs when leaving the temporal buffer."
   :type 'hook
   :group 'undo-propose)
 
 (defcustom undo-propose-entry-hook nil
-  "Hook runs when leaving the temporal buffer."
+  "Hook runs when entering the temporal buffer."
   :type 'hook
+  :group 'undo-propose)
+
+(defcustom undo-propose-marker-list
+  '(org-clock-marker org-clock-hd-marker)
+  "List of quoted markers to update after running undo-propose."
+  :type 'list
   :group 'undo-propose)
 
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
@@ -98,6 +106,7 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
       (setq-local buffer-read-only t)
       (setq-local undo-propose-parent orig-buffer)
       (undo-propose-mode 1)
+      (undo-propose-copy-markers)
       (run-hooks 'undo-propose-entry-hook)
       (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
 
@@ -131,6 +140,7 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
     (copy-to-buffer orig-buffer 1 (buffer-end 1))
     (with-current-buffer orig-buffer
       (setq-local buffer-undo-list list-copy))
+    (undo-propose-update-markers)
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
     (goto-char pos)
@@ -156,6 +166,7 @@ buffer contents are copied."
         (goto-char (point-max))
         (insert-buffer-substring tmp-buffer first-diff tmp-end)
         (goto-char first-diff)))
+    (undo-propose-update-markers)
     (switch-to-buffer orig-buffer)
     (kill-buffer tmp-buffer)
     (undo-propose--message "squash commit"))
@@ -180,6 +191,32 @@ buffer contents are copied."
   "View differences between ‘undo-propose’ buffer and its parent using `ediff'."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
+
+(defun undo-propose-copy-markers ()
+  "Copy markers registered in `undo-propose-marker-list'."
+  (setq-local undo-propose-marker-map
+              (cl-loop for marker-symbol in undo-propose-marker-list
+                       if (when (boundp marker-symbol)
+                            (let ((orig-marker (symbol-value marker-symbol)))
+                              (when (markerp orig-marker)
+                                (eq (marker-buffer orig-marker)
+                                    undo-propose-parent))))
+                       collect
+                       (let ((orig-marker (symbol-value marker-symbol))
+                             (new-marker (make-marker)))
+                         (move-marker new-marker (marker-position orig-marker))
+                         (cons new-marker orig-marker)))))
+
+(defun undo-propose-update-markers ()
+  "Update marker positions in parent buffer."
+  (cl-loop for association in undo-propose-marker-map do
+           (let ((new-marker (car association))
+                 (orig-marker (cdr association)))
+             ;; only update if orig-marker still exists
+             (when (and (markerp orig-marker)
+                        (eq (marker-buffer orig-marker) undo-propose-parent))
+               (move-marker orig-marker (marker-position new-marker)
+                            undo-propose-parent)))))
 
 (provide 'undo-propose)
 

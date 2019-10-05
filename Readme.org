@@ -61,6 +61,12 @@ add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap
 - ~undo-propose-done-hook~ is run after committing or squash
   committing an undo-propose
 
+*** Markers
+
+Currently =undo-propose= does not correctly update markers in the
+parent buffer after undo'ing. As a workaround, you can add markers to
+=undo-propose-marker-list= to ensure they are updated after undo'ing.
+
 *** Example configurations
 **** Simple configuration
 
