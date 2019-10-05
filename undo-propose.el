@@ -58,6 +58,12 @@
   :type 'hook
   :group 'undo-propose)
 
+(defcustom undo-propose-marker-list
+  '(org-clock-marker org-clock-hd-marker)
+  "List of quoted markers to update after running undo-propose."
+  :type 'list
+  :group 'undo-propose)
+
 (defvar undo-propose-parent nil "Parent buffer of ‘undo-propose’ buffer.")
 
 (defun undo-propose--message (content)
@@ -186,16 +192,18 @@ buffer contents are copied."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
 
-(defvar undo-propose-marker-list nil
-  "List of markers to update after running undo-propose.")
-
 (defun undo-propose-copy-markers ()
   "Copy markers registered in `undo-propose-marker-list'."
   (setq-local undo-propose-marker-map
-              (cl-loop for orig-marker in undo-propose-marker-list
-                       if (eq (marker-buffer orig-marker) undo-propose-parent)
+              (cl-loop for marker-symbol in undo-propose-marker-list
+                       if (when (boundp marker-symbol)
+                            (let ((orig-marker (symbol-value marker-symbol)))
+                              (when (markerp orig-marker)
+                                (eq (marker-buffer orig-marker)
+                                    undo-propose-parent))))
                        collect
-                       (let ((new-marker (make-marker)))
+                       (let ((orig-marker (symbol-value marker-symbol))
+                             (new-marker (make-marker)))
                          (move-marker new-marker (marker-position orig-marker))
                          (cons new-marker orig-marker)))))
 
@@ -209,9 +217,6 @@ buffer contents are copied."
                         (eq (marker-buffer orig-marker) undo-propose-parent))
                (move-marker orig-marker (marker-position new-marker)
                             undo-propose-parent)))))
-
-(with-eval-after-load 'org
-  (add-to-list 'undo-propose-marker-list org-clock-marker))
 
 (provide 'undo-propose)
 
