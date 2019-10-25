@@ -58,6 +58,12 @@
   :type 'hook
   :group 'undo-propose)
 
+(defcustom undo-propose-pop-to-buffer nil
+  "Whether the undo temp buffer should be opened in a new window."
+  :type '(choice (const :tag "Yes" t)
+                 (const :tag "No" nil))
+  :group 'undo-propose)
+
 (defcustom undo-propose-marker-list
   '(org-clock-marker org-clock-hd-marker)
   "List of quoted markers to update after running undo-propose."
@@ -97,7 +103,9 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
           (tmp-buffer (generate-new-buffer
                        (concat "*Undo Propose: "
                                (buffer-name) "*"))))
-      (switch-to-buffer tmp-buffer nil t)
+      (if undo-propose-pop-to-buffer
+          (set-window-dedicated-p (get-buffer-window (pop-to-buffer tmp-buffer)) t)
+        (switch-to-buffer tmp-buffer nil t))
       (funcall mode)
       (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
       (goto-char pos)
