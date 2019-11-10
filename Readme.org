@@ -61,6 +61,12 @@ add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap
 - ~undo-propose-done-hook~ is run after committing or squash
   committing an undo-propose
 
+*** Window
+
+By default, ~undo-propose~ opens the temporary buffer in the current
+window. To open in a new window instead, configure
+~undo-propose-pop-to-buffer~.
+
 *** Markers
 
 Currently =undo-propose= does not correctly update markers in the

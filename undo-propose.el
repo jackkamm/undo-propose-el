@@ -59,7 +59,9 @@
   :group 'undo-propose)
 
 (defcustom undo-propose-pop-to-buffer nil
-  "Whether the undo temp buffer should be opened in a new window."
+  "Whether the undo temp buffer should be opened in a new window.
+The new window behavior can be further configured through
+`display-buffer-alist'."
   :type '(choice (const :tag "Yes" t)
                  (const :tag "No" nil))
   :group 'undo-propose)
