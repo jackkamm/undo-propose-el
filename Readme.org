@@ -64,8 +64,8 @@ add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap
 *** Window
 
 By default, ~undo-propose~ opens the temporary buffer in the current
-window. To open in a new window instead, configure
-~undo-propose-pop-to-buffer~.
+window. To open in a new window instead, set
+~undo-propose-pop-to-buffer~ to ~t~.
 
 *** Markers
 
