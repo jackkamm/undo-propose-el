@@ -97,28 +97,27 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
   (interactive)
   (if (bound-and-true-p undo-propose-mode)
       (undo)
-    (let ((mode major-mode)
-          (orig-buffer (current-buffer))
+    (let ((orig-buffer (current-buffer))
           (list-copy (undo-copy-list buffer-undo-list))
           (pos (point))
-          (win-start (window-start))
-          (tmp-buffer (generate-new-buffer
-                       (concat "*Undo Propose: "
-                               (buffer-name) "*"))))
-      (if undo-propose-pop-to-buffer
-          (set-window-dedicated-p (get-buffer-window (pop-to-buffer tmp-buffer)) t)
-        (switch-to-buffer tmp-buffer nil t))
-      (funcall mode)
-      (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
-      (goto-char pos)
-      (set-window-start (selected-window) win-start)
-      (setq-local buffer-undo-list list-copy)
-      (setq-local buffer-read-only t)
-      (setq-local undo-propose-parent orig-buffer)
-      (undo-propose-mode 1)
-      (undo-propose-copy-markers)
-      (run-hooks 'undo-propose-entry-hook)
-      (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff"))))
+          (win-start (window-start)))
+      (with-current-buffer (generate-new-buffer
+                            (format "*Undo Propose: %s*" (buffer-name)))
+        (if undo-propose-pop-to-buffer
+            (set-window-dedicated-p
+             (get-buffer-window (pop-to-buffer (current-buffer))) t)
+          (switch-to-buffer (current-buffer) nil t))
+        (funcall (with-current-buffer orig-buffer major-mode))
+        (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
+        (goto-char pos)
+        (set-window-start (selected-window) win-start)
+        (setq-local buffer-undo-list list-copy)
+        (setq-local buffer-read-only t)
+        (setq-local undo-propose-parent orig-buffer)
+        (undo-propose-mode 1)
+        (undo-propose-copy-markers)
+        (run-hooks 'undo-propose-entry-hook)
+        (undo-propose--message "C-c C-c to commit, C-c C-s to squash commit, C-c C-k to cancel, C-c C-d to diff")))))
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
