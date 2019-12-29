@@ -202,6 +202,8 @@ buffer contents are copied."
   (interactive)
   (ediff-buffers undo-propose-parent (current-buffer)))
 
+(defvar-local undo-propose-marker-map nil)
+
 (defun undo-propose-copy-markers ()
   "Copy markers registered in `undo-propose-marker-list'."
   (setq-local undo-propose-marker-map
