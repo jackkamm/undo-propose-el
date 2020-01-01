@@ -63,9 +63,19 @@ add [[https://www.emacswiki.org/emacs/RedoMode][redo]], call ~(undo-propose-wrap
 
 *** Window
 
-By default, ~undo-propose~ opens the temporary buffer in the current
-window. To open in a new window instead, set
-~undo-propose-pop-to-buffer~ to ~t~.
+By default, ~undo-propose~ opens the temporary buffer in a new
+window.
+
+To configure window behavior, you can set ~display-buffer-alist~
+([[https://www.gnu.org/software/emacs/manual/html_node/elisp/Choosing-Window.html#Choosing-Window][Emacs manual]]).
+
+For example, to revert to the previous default behavior of opening the
+buffer in the current window:
+
+#+begin_src emacs-lisp
+  (add-to-list 'display-buffer-alist
+               '("\\*Undo Propose" (display-buffer-same-window)))
+#+end_src
 
 *** Markers
 
@@ -118,6 +128,14 @@ bugs that corrupt the undo history.
 - [[https://www.reddit.com/r/emacs/comments/6yzwic/how_emacs_undo_works/][reddit.com/r/emacs: How Emacs undo works]]
 
 ** Changes
+*** 4.0.0
+
+Switched to using the ~display-buffer~ framework to configure window
+display. This obsoletes the option ~undo-propose-pop-to-buffer~. The
+new default window behavior has also changed to pop up a new window,
+as if the obsolete option ~undo-propose-pop-to-buffer~ were set to
+~t~.
+
 *** 3.0.0
 
 ~undo-propose-commit-buffer-only~ was renamed to

@@ -2,7 +2,7 @@
 
 ;; Author: Jack Kamm
 ;; Maintainer: Jack Kamm
-;; Version: 3.0.0
+;; Version: 4.0.0
 ;; Package-Requires: ((emacs "24.3"))
 ;; Homepage: https://github.com/jackkamm/undo-propose.el
 ;; Keywords: convenience, files, undo, redo, history
@@ -58,13 +58,11 @@
   :type 'hook
   :group 'undo-propose)
 
-(defcustom undo-propose-pop-to-buffer nil
-  "Whether the undo temp buffer should be opened in a new window.
-The new window behavior can be further configured through
-`display-buffer-alist'."
-  :type '(choice (const :tag "Yes" t)
-                 (const :tag "No" nil))
-  :group 'undo-propose)
+(make-obsolete-variable 'undo-propose-pop-to-buffer
+                        "`undo-propose-pop-to-buffer' is obsolete.
+The default window behavior has also changed. Use
+`display-buffer-alist' to configure window behavior."
+                        "4.0.0")
 
 (defcustom undo-propose-marker-list
   '(org-clock-marker org-clock-hd-marker)
@@ -105,9 +103,7 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
           (tmp-buffer (generate-new-buffer
                        (concat "*Undo Propose: "
                                (buffer-name) "*"))))
-      (if undo-propose-pop-to-buffer
-          (set-window-dedicated-p (get-buffer-window (pop-to-buffer tmp-buffer)) t)
-        (switch-to-buffer tmp-buffer nil t))
+      (pop-to-buffer tmp-buffer)
       (funcall mode)
       (insert-buffer-substring orig-buffer 1 (1+ (buffer-size orig-buffer)))
       (goto-char pos)
@@ -142,19 +138,18 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
 (defun undo-propose-commit ()
   "Quit and copy ‘undo-propose’ buffer and undo-ring back to the parent buffer."
   (interactive)
-  (let ((tmp-buffer (current-buffer))
+  (let ((win (selected-window))
+        (tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent)
         (list-copy (undo-copy-list buffer-undo-list))
-        (pos (point))
-        (win-start (window-start)))
+        (pos (point)))
     (copy-to-buffer orig-buffer 1 (buffer-end 1))
     (with-current-buffer orig-buffer
       (setq-local buffer-undo-list list-copy))
     (undo-propose-update-markers)
+    (quit-restore-window win 'kill)
     (switch-to-buffer orig-buffer)
-    (kill-buffer tmp-buffer)
     (goto-char pos)
-    (set-window-start (selected-window) win-start)
     (undo-propose--message "commit"))
   (run-hooks 'undo-propose-done-hook))
 
@@ -163,7 +158,9 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
 That is, the undo-ring is NOT copied to the parent, only the
 buffer contents are copied."
   (interactive)
-  (let* ((tmp-buffer (current-buffer))
+  (let* ((win (selected-window))
+         (pos (point))
+         (tmp-buffer (current-buffer))
          (tmp-end (1+ (buffer-size tmp-buffer)))
          (orig-buffer undo-propose-parent)
          (orig-end (1+ (buffer-size orig-buffer)))
@@ -177,8 +174,9 @@ buffer contents are copied."
         (insert-buffer-substring tmp-buffer first-diff tmp-end)
         (goto-char first-diff)))
     (undo-propose-update-markers)
+    (quit-restore-window win 'kill)
     (switch-to-buffer orig-buffer)
-    (kill-buffer tmp-buffer)
+    (goto-char pos)
     (undo-propose--message "squash commit"))
   (run-hooks 'undo-propose-done-hook))
 (define-obsolete-function-alias 'undo-propose-commit-buffer-only
@@ -190,11 +188,8 @@ buffer contents are copied."
 (defun undo-propose-cancel ()
   "Kill ‘undo-propose’ buffer without copying back to its parent."
   (interactive)
-  (let ((tmp-buffer (current-buffer))
-        (orig-buffer undo-propose-parent))
-    (switch-to-buffer orig-buffer)
-    (kill-buffer tmp-buffer)
-    (undo-propose--message "cancel"))
+  (quit-restore-window (selected-window) 'kill)
+  (undo-propose--message "cancel")
   (run-hooks 'undo-propose-done-hook))
 
 (defun undo-propose-diff ()
