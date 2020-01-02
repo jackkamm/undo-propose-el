@@ -58,7 +58,7 @@
   :type 'hook
   :group 'undo-propose)
 
-(make-obsolete-variable undo-propose-pop-to-buffer
+(make-obsolete-variable 'undo-propose-pop-to-buffer
                         "`undo-propose-pop-to-buffer' is obsolete.
 The default window behavior has also changed. Use
 `display-buffer-alist' to configure window behavior."
