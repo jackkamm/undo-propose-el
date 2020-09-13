@@ -1,4 +1,11 @@
 * undo-propose
+** New maintainer wanted
+
+Please let me know if you'd be interested in maintaining this
+package. I'm no longer using it, as I found the built-in
+=revert-buffer= suffices for my needs.
+
+** Introduction
 
 ~undo-propose.el~ is a package that allows you to stage undo's in a
 temporary buffer before committing them.
