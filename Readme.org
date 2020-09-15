@@ -3,7 +3,7 @@
 
 Please let me know if you'd be interested in maintaining this
 package. I'm no longer using it, as I found the built-in
-=revert-buffer= suffices for my needs.
+=revert-buffer= suffices for my need of checkpointing undo's.
 
 ** Introduction
 
