@@ -139,7 +139,6 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
   "Quit and copy ‘undo-propose’ buffer and undo-ring back to the parent buffer."
   (interactive)
   (let ((win (selected-window))
-        (tmp-buffer (current-buffer))
         (orig-buffer undo-propose-parent)
         (list-copy (undo-copy-list buffer-undo-list))
         (pos (point)))
