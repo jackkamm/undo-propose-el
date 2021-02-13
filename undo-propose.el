@@ -118,11 +118,14 @@ If already inside an `undo-propose' buffer, this will simply call `undo'."
 
 (define-minor-mode undo-propose-mode
   "Minor mode for `undo-propose'."
-  nil " UndoP" (make-sparse-keymap))
-(define-key undo-propose-mode-map (kbd "C-c C-c") 'undo-propose-commit)
-(define-key undo-propose-mode-map (kbd "C-c C-s") 'undo-propose-squash-commit)
-(define-key undo-propose-mode-map (kbd "C-c C-d") 'undo-propose-diff)
-(define-key undo-propose-mode-map (kbd "C-c C-k") 'undo-propose-cancel)
+  :init-value nil
+  :require 'undo-propose
+  :lighter " UndoP"
+  :group 'undo-propose
+  :keymap '(([C-c C-c] . undo-propose-commit)
+            ([C-c C-s] . undo-propose-squash-commit)
+            ([C-c C-d] . undo-propose-diff)
+            ([C-c C-k] . undo-propose-cancel)))
 
 (defmacro undo-propose-wrap (command)
   "Wrap COMMAND so it is useable within the ‘undo-propose’ buffer."
